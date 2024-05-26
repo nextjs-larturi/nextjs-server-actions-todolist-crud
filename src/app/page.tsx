@@ -1,10 +1,21 @@
-import prisma from '@/lib/prisma'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { Task } from '@prisma/client'
 import { TaskCard } from '@/components/task-card'
+import { getTasks } from '@/actions/task-actions'
 
-export const dynamic = 'force-dynamic'
+export default function HomePage() {
+  const [tasks, setTasks] = useState([] as Task[])
 
-async function HomePage() {
-  const tasks = await prisma.task.findMany()
+  useEffect(() => {
+    async function fetchData() {
+      const allTasks = await getTasks()
+      setTasks(allTasks)
+    }
+
+    fetchData()
+  }, [])
 
   return (
     <div className='grid grid-cols-3 gap-4'>
@@ -14,5 +25,3 @@ async function HomePage() {
     </div>
   )
 }
-
-export default HomePage

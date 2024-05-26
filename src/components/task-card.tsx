@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { Task } from '@prisma/client'
 import clsx from 'clsx'

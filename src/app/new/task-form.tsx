@@ -1,5 +1,6 @@
-import * as React from 'react'
+'use client'
 
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -19,14 +20,26 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
 import { createTask, updateTask } from '@/actions/task-actions'
 import { Task } from '@prisma/client'
 
 export function TaskForm({ task }: { task?: Task }) {
-  const functionAction = task?.id ? updateTask : createTask
-
+  const router = useRouter()
   return (
-    <form action={functionAction}>
+    <form
+      action={async (formData: FormData) => {
+        if (task) {
+          const updatedTask = await updateTask(formData)
+          toast.success(`Task updated! ${updatedTask?.name}`)
+        } else {
+          const newTask = await createTask(formData)
+          toast.success(`Task created! ${newTask?.name}`)
+        }
+        router.refresh()
+        router.replace('/')
+      }}
+    >
       <input type='hidden' name='id' value={task?.id} />
 
       <Card className='w-[450px]'>

@@ -2,7 +2,12 @@
 
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+
+export async function getTasks() {
+  const tasks = await prisma.task.findMany()
+
+  return tasks
+}
 
 export async function createTask(formData: FormData) {
   const name = formData.get('name')?.toString()
@@ -21,9 +26,7 @@ export async function createTask(formData: FormData) {
     data: task
   })
 
-  console.log(newTask)
-
-  redirect('/')
+  return newTask
 }
 
 export async function updateTask(formData: FormData) {
@@ -36,7 +39,7 @@ export async function updateTask(formData: FormData) {
     return
   }
 
-  await prisma.task.update({
+  const updatedTask = await prisma.task.update({
     where: {
       id: parseInt(id)
     },
@@ -47,7 +50,7 @@ export async function updateTask(formData: FormData) {
     }
   })
 
-  redirect('/')
+  return updatedTask
 }
 export async function removeTask(formData: FormData) {
   const taskId = formData.get('taskId')?.toString()
